@@ -20,7 +20,7 @@ type Response struct {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api", apiQueryHandler)
-	http.ListenAndServe(":3000", mux)
+	http.ListenAndServe(":443", mux)
 }
 
 func apiQueryHandler(w http.ResponseWriter, r *http.Request) {
