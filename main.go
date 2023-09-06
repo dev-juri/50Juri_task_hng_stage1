@@ -2,25 +2,26 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
 )
 
 type Response struct {
-	SlackName     string    `json:"slack_name"`
-	CurrentDay    string    `json:"current_day"`
-	UtcTime       time.Time `json:"utc_time"`
-	Track         string    `json:"track"`
-	GithubFileUrl string    `json:"github_file_url"`
-	GithubRepoUrl string    `json:"github_repo_url"`
-	StatusCode    int       `json:"status_code"`
+	SlackName     string `json:"slack_name"`
+	CurrentDay    string `json:"current_day"`
+	UtcTime       string `json:"utc_time"`
+	Track         string `json:"track"`
+	GithubFileUrl string `json:"github_file_url"`
+	GithubRepoUrl string `json:"github_repo_url"`
+	StatusCode    int    `json:"status_code"`
 }
 
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api", apiQueryHandler)
-	http.ListenAndServe(":443", mux)
+	http.ListenAndServe(":3000", mux)
 }
 
 func apiQueryHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,10 +43,15 @@ func apiQueryHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		current_time := time.Now().UTC()
+		time := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02dZ",
+			current_time.Year(), current_time.Month(), current_time.Day(),
+			current_time.Hour(), current_time.Minute(), current_time.Second())
+
 		response := Response{
 			SlackName:     slackName,
-			CurrentDay:    time.Now().UTC().Weekday().String(),
-			UtcTime:       time.Now().UTC(),
+			CurrentDay:    current_time.UTC().Weekday().String(),
+			UtcTime:       time,
 			Track:         track,
 			GithubFileUrl: "https://github.com/dev-juri/50Juri_task_hng_stage1/blob/main/main.go",
 			GithubRepoUrl: "https://github.com/dev-juri/50Juri_task_hng_stage1",
